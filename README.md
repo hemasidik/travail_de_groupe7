@@ -83,4 +83,5 @@ OOP Concepts Used:
 
 1. Clone the repository:
 
-git clone https://github.com/your-username/MyShop.git
+https://github.com/hemasidik/travail_de_groupe7.git
+
