@@ -114,3 +114,106 @@ def input_float(prompt: str, mini: float = 0.0) -> float:
             print_err("Please enter a valid number.")
 
 
+
+
+
+# ─── OOP: Second child class ──────────────────────────────────────────────────
+class PerishableProduct(Product):
+    """
+    A product with an expiry date. Inherits from Product.
+
+    Extends Product with expiry date tracking and expiry checking.
+    Demonstrates a second level of inheritance.
+
+    Attributes:
+        expiry_date (str): The expiry date in MM/DD/YYYY format.
+    """
+
+    def __init__(self, expiry_date: str, **kwargs) -> None:
+        """
+        Initialise a PerishableProduct with an expiry date.
+
+        Args:
+            expiry_date: Expiry date string in MM/DD/YYYY format.
+            **kwargs:    All other arguments passed to Product.__init__.
+        """
+        super().__init__(**kwargs)
+        self._expiry_date: str = expiry_date
+
+    @property
+    def expiry_date(self) -> str:
+        """Return the expiry date."""
+        return self._expiry_date
+
+    def is_expired(self) -> bool:
+        """
+        Check whether the product has passed its expiry date.
+
+        Returns:
+            True if the product is expired, False otherwise.
+        """
+        try:
+            expiry = datetime.strptime(self._expiry_date, "%m/%d/%Y")
+            return datetime.now() > expiry
+        except ValueError:
+            return False
+
+    def get_status(self) -> str:
+        """
+        Return stock status, also flagging expired products.
+        Polymorphism: overrides Product.get_status() with expiry logic.
+
+        Returns:
+            'EXPIRED', 'OUT OF STOCK', 'LOW STOCK', or 'OK'.
+        """
+        if self.is_expired():
+            return "EXPIRED"
+        return super().get_status()     # delegates to Product.get_status()
+
+    def display(self) -> str:
+        """
+        Return a one-line product summary including expiry date.
+        Overrides Product.display() with additional expiry info.
+
+        Returns:
+            A formatted string including the expiry date and status.
+        """
+        base = super().display()
+        return f"{base} | expires: {self._expiry_date}"
+
+    def to_dict(self) -> dict:
+        """
+        Serialise to dictionary including expiry date and type tag.
+
+        Returns:
+            A dictionary with all fields including 'expiry_date' and 'type'.
+        """
+        d = super().to_dict()
+        d["expiry_date"] = self._expiry_date
+        d["type"]        = "perishable"
+        return d
+
+    @staticmethod
+    def from_dict(data: dict) -> "PerishableProduct":
+        """
+        Reconstruct a PerishableProduct from a saved dictionary.
+
+        Args:
+            data: Dictionary loaded from JSON file.
+
+        Returns:
+            A PerishableProduct instance.
+        """
+        return PerishableProduct(
+            expiry_date = data.get("expiry_date", ""),
+            item_id     = data["id"],
+            name        = data["name"],
+            stock       = data["stock"],
+            category    = data["category"],
+            sell_price  = data["sell_price"],
+            buy_price   = data["buy_price"],
+            threshold   = data["threshold"],
+            total_sold  = data.get("total_sold", 0),
+            date_added  = data.get("date_added", ""),
+        )
+
