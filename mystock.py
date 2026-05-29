@@ -256,3 +256,4 @@ def record_sale(products: list, sales: list) -> None:
 
             pause()
             return
+
