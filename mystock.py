@@ -223,3 +223,80 @@ class ShopItem:
             "name":  self._name,
             "stock": self._stock,
         }
+# ─── Data persistence ─────────────────────────────────────────────────────────
+def load_data() -> tuple[list, list]:
+    """
+    Load products and sales from the JSON data file.
+
+    Returns:
+        A tuple of (products list, sales list).
+        Products are reconstructed as Product or PerishableProduct objects.
+    """
+    if not os.path.exists(DATA_FILE):
+        return [], []
+
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        raw: dict = json.load(f)
+
+    products: list = []
+    for d in raw.get("products", []):
+        # Reconstruct correct object type based on saved 'type' field
+        if d.get("type") == "perishable":
+            products.append(PerishableProduct.from_dict(d))
+        else:
+            products.append(Product.from_dict(d))
+
+    sales: list = raw.get("sales", [])
+    return products, sales
+
+def save_data(products: list, sales: list) -> None:
+    """
+    Save all products and sales to the JSON data file.
+
+    Args:
+        products: List of Product (or PerishableProduct) objects.
+        sales:    List of sale dictionaries.
+    """
+    data: dict = {
+        "products": [p.to_dict() for p in products],
+        "sales":    sales,
+    }
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+# ─── Product picker (shared by multiple menus) ────────────────────────────────
+def pick_product(products: list, label: str = "Choose a product") -> Optional[Product]:
+    """
+    Display a searchable product list and let the user pick one by number.
+
+    Args:
+        products: List of Product objects to choose from.
+        label:    Prompt label shown above the number input.
+
+    Returns:
+        The selected Product object, or None if cancelled / not found.
+    """
+    if not products:
+        print_err("No products registered yet.")
+        return None
+
+    term: str = input(f"  Search (name/category, Enter to show all): ").strip().lower()
+    if term:
+        lst: list = [p for p in products
+                     if term in p.name.lower() or term in p.category.lower()]
+        if not lst:
+            print_warn(f"No product found for '{term}'.")
+            return None
+        print_info(f"{len(lst)} result(s) for '{term}'")
+    else:
+        lst = products
+
+    print()
+    for i, p in enumerate(lst, 1):
+        print(f"  {Colors.GRAY}{i:2}.{Colors.RESET} {Colors.BOLD}{p.name:<25}{Colors.RESET} "
+              f"stock: {p.stock_color()}{p.stock:>5}{Colors.RESET}  "
+              f"{fmt(p.sell_price):>10} FCFA  {p.colored_status()}")
+    print()
+    choice: int = input_int(f"  {label} (number, 0 to cancel): ", 0, len(lst))
+    return None if choice == 0 else lst[choice - 1]
