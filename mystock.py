@@ -1,119 +1,3 @@
-#!/usr/bin/env python3
-"""
-MyShop - Inventory, Sales and Restocking Management System
-BIT | Programming I with Python | Group Project
-"""
-
-# ─── Standard library imports ─────────────────────────────────────────────────
-import json
-import os
-import sys
-from datetime import datetime
-from typing import Optional
-
-# ─── Constants ────────────────────────────────────────────────────────────────
-DATA_FILE: str = "shop_data.json"
-CATEGORIES: tuple = ("Food", "Beverages", "Hygiene", "Electronics", "Clothing", "Other")
-APP_VERSION: str = "1.0.0"
-APP_NAME: str = "MyShop"
-
-
-# ─── Terminal colors (ANSI) ───────────────────────────────────────────────────
-class Colors:
-    """ANSI escape codes for terminal color output."""
-    RESET  = "\033[0m"
-    BOLD   = "\033[1m"
-    GREEN  = "\033[92m"
-    YELLOW = "\033[93m"
-    RED    = "\033[91m"
-    BLUE   = "\033[94m"
-    CYAN   = "\033[96m"
-    GRAY   = "\033[90m"
-
-
-# ─── Helper print functions ───────────────────────────────────────────────────
-def print_ok(msg: str) -> None:
-    """Print a success message in green."""
-    print(f"{Colors.GREEN}  ✔ {msg}{Colors.RESET}")
-
-def print_err(msg: str) -> None:
-    """Print an error message in red."""
-    print(f"{Colors.RED}  ✘ {msg}{Colors.RESET}")
-
-def print_info(msg: str) -> None:
-    """Print an info message in cyan."""
-    print(f"{Colors.CYAN}  ℹ {msg}{Colors.RESET}")
-
-def print_warn(msg: str) -> None:
-    """Print a warning message in yellow."""
-    print(f"{Colors.YELLOW}  ⚠ {msg}{Colors.RESET}")
-
-def separator(title: str = "", char: str = "─") -> None:
-    """Print a styled separator line, optionally with a centered title."""
-    width: int = 62
-    if title:
-        pad = (width - len(title) - 2) // 2
-        print(f"\n{Colors.BOLD}{Colors.BLUE}{char * pad} {title} {char * (width - pad - len(title) - 2)}{Colors.RESET}")
-    else:
-        print(f"{Colors.GRAY}{char * width}{Colors.RESET}")
-
-def fmt(n: float) -> str:
-    """Format a number with thousands separator."""
-    return f"{n:,.0f}".replace(",", " ")
-
-def pause() -> None:
-    """Wait for the user to press Enter before continuing."""
-    input(f"\n  {Colors.GRAY}[Press Enter to continue]{Colors.RESET}")
-
-
-# ─── Input helpers ────────────────────────────────────────────────────────────
-def input_int(prompt: str, mini: int = 0, maxi: Optional[int] = None) -> int:
-    """
-    Prompt the user for an integer input within an optional range.
-
-    Args:
-        prompt: The message shown to the user.
-        mini:   Minimum accepted value (inclusive).
-        maxi:   Maximum accepted value (inclusive), or None for no limit.
-
-    Returns:
-        A valid integer entered by the user.
-    """
-    while True:
-        try:
-            val: int = int(input(prompt))
-            if val < mini:
-                print_err(f"Minimum value: {mini}")
-                continue
-            if maxi is not None and val > maxi:
-                print_err(f"Maximum value: {maxi}")
-                continue
-            return val
-        except ValueError:
-            print_err("Please enter a whole number.")
-
-def input_float(prompt: str, mini: float = 0.0) -> float:
-    """
-    Prompt the user for a float input with a minimum value.
-
-    Args:
-        prompt: The message shown to the user.
-        mini:   Minimum accepted value (inclusive).
-
-    Returns:
-        A valid float entered by the user.
-    """
-    while True:
-        try:
-            val: float = float(input(prompt))
-            if val < mini:
-                print_err(f"Minimum value: {mini}")
-                continue
-            return val
-        except ValueError:
-            print_err("Please enter a valid number.")
-
-
 
 
 
@@ -217,3 +101,95 @@ class PerishableProduct(Product):
             date_added  = data.get("date_added", ""),
         )
 
+
+
+# ─── PRODUCTS MODULE ──────────────────────────────────────────────────────────
+def products_menu(products: list, sales: list) -> None:
+    """Display the products sub-menu and dispatch to the chosen action."""
+    while True:
+        separator("PRODUCTS")
+        print(f"""
+  {Colors.BOLD}1.{Colors.RESET} Add a standard product
+  {Colors.BOLD}2.{Colors.RESET} Add a perishable product (with expiry date)
+  {Colors.BOLD}3.{Colors.RESET} View all products
+  {Colors.BOLD}4.{Colors.RESET} Search a product
+  {Colors.BOLD}5.{Colors.RESET} Edit a product
+  {Colors.BOLD}6.{Colors.RESET} Delete a product
+  {Colors.BOLD}0.{Colors.RESET} Back
+""")
+        choice: int = input_int("  Your choice: ", 0, 6)
+        if choice == 0:   break
+        elif choice == 1: add_product(products, sales, perishable=False)
+        elif choice == 2: add_product(products, sales, perishable=True)
+        elif choice == 3: list_products(products)
+        elif choice == 4: search_product(products, sales)
+        elif choice == 5: edit_product(products, sales)
+        elif choice == 6: delete_product(products, sales)
+
+def add_product(products: list, sales: list, perishable: bool = False) -> None:
+    """
+    Prompt the user for product details and add a new product to the list.
+
+    Args:
+        products:   The current list of Product objects (modified in place).
+        sales:      The current sales list (needed for auto-save).
+        perishable: If True, creates a PerishableProduct with an expiry date.
+    """
+    title: str = "ADD A PERISHABLE PRODUCT" if perishable else "ADD A PRODUCT"
+    separator(title)
+
+    name: str = input("\n  Product name: ").strip()
+    if not name:
+        print_err("Name cannot be empty.")
+        return
+    # Check for duplicate names (case-insensitive)
+    if any(p.name.lower() == name.lower() for p in products):
+        print_err(f"A product named '{name}' already exists.")
+        return
+
+    # Display CATEGORIES tuple for the user to choose from
+    print("\n  Categories:")
+    for i, c in enumerate(CATEGORIES, 1):
+        print(f"    {i}. {c}")
+    idx: int = input_int("  Choose a category: ", 1, len(CATEGORIES))
+    cat: str = CATEGORIES[idx - 1]
+
+    sell_price: float = input_float("  Selling price (FCFA): ", 0.01)
+    buy_price:  float = input_float("  Purchase price (FCFA): ", 0)
+    stock_qty:  int   = input_int("  Initial stock quantity: ", 0)
+    threshold:  int   = input_int("  Alert threshold (min quantity before alert): ", 0)
+
+    new_id: int = int(datetime.now().timestamp() * 1000)
+
+    if perishable:
+        expiry: str = input("  Expiry date (MM/DD/YYYY): ").strip()
+        product = PerishableProduct(
+            expiry_date = expiry,
+            item_id     = new_id,
+            name        = name,
+            stock       = stock_qty,
+            category    = cat,
+            sell_price  = sell_price,
+            buy_price   = buy_price,
+            threshold   = threshold,
+        )
+    else:
+        product = Product(
+            item_id    = new_id,
+            name       = name,
+            stock      = stock_qty,
+            category   = cat,
+            sell_price = sell_price,
+            buy_price  = buy_price,
+            threshold  = threshold,
+        )
+
+    products.append(product)
+    save_data(products, sales)
+    print_ok(f"Product '{name}' added successfully!")
+
+    # Warn immediately if the initial stock is already below threshold
+    if product.is_out_of_stock():
+        print_warn(f"Note: '{name}' was added with zero stock.")
+    elif product.is_low_stock():
+        print_warn(f"Note: '{name}' stock is already below the alert threshold.")
