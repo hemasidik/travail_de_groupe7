@@ -114,3 +114,112 @@ def input_float(prompt: str, mini: float = 0.0) -> float:
             print_err("Please enter a valid number.")
 
 
+# ─── OOP: Base class ──────────────────────────────────────────────────────────
+class ShopItem:
+    """
+    Base class representing a generic item in the shop.
+
+    Attributes:
+        item_id (int):   Unique identifier for the item.
+        name    (str):   Name of the item.
+        stock   (int):   Current quantity in stock.
+    """
+
+    def _init_(self, item_id: int, name: str, stock: int) -> None:
+        """
+        Initialise a ShopItem.
+
+        Args:
+            item_id: Unique numeric identifier.
+            name:    Display name of the item.
+            stock:   Initial stock quantity.
+        """
+        # Encapsulation: attributes are managed through this class
+        self._item_id: int = item_id
+        self._name: str    = name
+        self._stock: int   = stock
+
+    # ── Properties (encapsulation: controlled access to private attributes) ──
+    @property
+    def item_id(self) -> int:
+        """Return the item's unique ID."""
+        return self._item_id
+
+    @property
+    def name(self) -> str:
+        """Return the item's name."""
+        return self._name
+
+    @name.setter
+    def name(self, value: str) -> None:
+        """Set the item's name if non-empty."""
+        if value.strip():
+            self._name = value.strip()
+
+    @property
+    def stock(self) -> int:
+        """Return the current stock level."""
+        return self._stock
+
+    @stock.setter
+    def stock(self, value: int) -> None:
+        """Set stock, preventing negative values."""
+        self._stock = max(0, value)
+
+    def add_stock(self, quantity: int) -> None:
+        """
+        Increase stock by a given quantity.
+
+        Args:
+            quantity: Number of units to add (must be positive).
+        """
+        if quantity > 0:
+            self._stock += quantity
+
+    def remove_stock(self, quantity: int) -> bool:
+        """
+        Decrease stock by a given quantity if available.
+
+        Args:
+            quantity: Number of units to remove.
+
+        Returns:
+            True if successful, False if insufficient stock.
+        """
+        if quantity <= self._stock:
+            self._stock -= quantity
+            return True
+        return False
+
+    def get_status(self) -> str:
+        """
+        Return a plain-text stock status label.
+        Polymorphism: overridden in child classes for different behaviour.
+
+        Returns:
+            A string describing the stock status.
+        """
+        return "IN STOCK" if self._stock > 0 else "OUT OF STOCK"
+
+    def display(self) -> str:
+        """
+        Return a formatted one-line summary of this item.
+        Abstraction: caller does not need to know how formatting works.
+
+        Returns:
+            A string summary of the item.
+        """
+        return f"[{self._item_id}] {self._name} — stock: {self._stock}"
+
+    def to_dict(self) -> dict:
+        """
+        Serialise the item to a dictionary for JSON storage.
+
+        Returns:
+            A dictionary with item data.
+        """
+        return {
+            "id":    self._item_id,
+            "name":  self._name,
+            "stock": self._stock,
+        }
