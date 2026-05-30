@@ -4,6 +4,7 @@ MyShop - Inventory, Sales and Restocking Management System
 BIT | Programming I with Python | Group Project
 """
 
+
 # ─── Standard library imports ─────────────────────────────────────────────────
 import json
 import os
