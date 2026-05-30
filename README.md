@@ -1,15 +1,13 @@
-🛒 MyShop – Inventory & Sales Management System
+MyShop : Inventory and Sales Management System
 
-📌 Project Description
+Project Description
 
 MyShop is a Python-based inventory management system designed for small businesses.
 It allows users to manage products, track stock levels, record sales, generate reports, and receive restocking alerts.
 
 The project demonstrates Object-Oriented Programming (OOP), file handling, and real-world software design principles.
 
----
-
-🚀 Features
+Features
 
 - Add, edit, and delete products
 - Manage perishable and non-perishable products
@@ -21,9 +19,8 @@ The project demonstrates Object-Oriented Programming (OOP), file handling, and r
 - Data persistence using JSON files
 - User-friendly terminal interface with colors
 
----
 
-🧠 Technologies Used
+ Technologies 
 
 - Python 3.x
 - JSON (data storage)
@@ -32,30 +29,8 @@ The project demonstrates Object-Oriented Programming (OOP), file handling, and r
 - sys module
 - OOP (Object-Oriented Programming)
 
----
 
-📂 Project Structure
-
-MyShop/
-│
-├── 
-│ └── 
-│
-├── 
-│ └── 
-│
-├── docs/
-│ └── 
-│
-├── 
-│
-├─
-├──
-└── .
-
----
-
-🏗️ OOP Structure
+ OOP Structure
 
 ShopItem (Base Class)
 
@@ -74,11 +49,24 @@ PerishableProduct (Child of Product)
 
 OOP Concepts Used:
 
-- Encapsulation → private attributes with getters/setters
-- Inheritance → Product inherits ShopItem
-- Polymorphism → get_status() behaves differently
-- Abstraction → display() hides complexity
+- Encapsulation : private attributes with getters/setters
+- Inheritance :Product inherits ShopItem
+- Polymorphism : get_status() behaves differently
+- Abstraction : display() hides complexity
 
+we used also python funtamentals rules like :
+-Variables
+- data types
+-  type annotation
+-  input/output
+-  arithmetic
+-  lists
+-  tuples
+-  dictionaries
+-  conditions,
+-  loops
+- functions
+-  files
 
 
 1. Clone the repository:
