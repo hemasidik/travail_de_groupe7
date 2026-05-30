@@ -1,3 +1,9 @@
+Hema Dilofa A. C. Sidik : i'm the leader and for this project i helped to write the header to code line(1-117) and the deadline line(1205-1265) i also write a part of the readme.
+kinda Fabiola: she write the product part line (230-475) she also write a part of readme
+kinda Roukieta : she write the part of sales management alerts line(902-1129)
+Kindo Andrea : she write the part of shopitems and persistance line(119-229) and Line(577-655)
+kiendrebeogo Mashoud : he write the perishable product and ajout part, line(476-576) and line(656-745)
+kima Meliane : sh write catalogue and rapport part of this project Line(746-901) and line(1130-1204)
 Table of Contents
 
 Overview
