@@ -1,6 +1,6 @@
 TEAM MATE CONTRIBUTION :
 
-Hema Dilofa A. C. Sidik : i'm the leader and for this project i helped to write the header to code line(1-117) and the deadline line(1205-1265) i also write a part of the readme.
+Hema Dilofa A. C. Sidik : i'm the leader and for this project i helped to write the header to code line(1-117) and the deadline line(1205-1265) ,I also write a part of the readme.
 kinda Fabiola: she write the product part line (230-475) she also write a part of readme
 kinda Roukieta : she write the part of sales management alerts line(902-1129)
 Kindo Andrea : she write the part of shopitems and persistance line(119-229) and Line(577-655)
