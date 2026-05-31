@@ -5,7 +5,7 @@ kinda Fabiola: she write the product part line (230-475) she also write a part o
 kinda Roukieta : she write the part of sales management alerts line(902-1129)
 Kindo Andrea : she write the part of shopitems and persistance line(119-229) and Line(577-655)
 kiendrebeogo Mashoud : he write the perishable product and ajout part, line(476-576) and line(656-745)
-kima Meliane : sh write catalogue and rapport part of this project Line(746-901) and line(1130-1204)
+kima Meliane : she write catalogue and rapport part of this project Line(746-901) and line(1130-1204)
 Table of Contents
 
 Overview
